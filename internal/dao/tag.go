@@ -18,7 +18,6 @@ func (d *Dao) CreateTag(name string, state uint8, createdBy string) error {
 			CreatedBy: createdBy,
 		},
 	}
-
 	return tag.Create(d.engine)
 }
 

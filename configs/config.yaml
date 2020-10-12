@@ -10,6 +10,7 @@ App:
   LogSavePath: storage/logs
   LogFileName: app
   LogFileExt: .log
+  ContextTimeout: 60
   UploadSavePath: storage/uploads
   UploadServerUrl: http://127.0.0.1:8000/static
   UploadImageMaxSize: 5  # MB
@@ -32,3 +33,12 @@ JWT:
   Secret: eddycjy
   Issuer: blog-service
   Expire: 7200
+Email:
+  Host: smtp.qq.com
+  Port: 465
+  UserName: xxx
+  Password: xxx
+  IsSSL: true
+  From: xxx
+  To:
+    - xxx

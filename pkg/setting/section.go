@@ -16,6 +16,7 @@ type AppSettingS struct {
 	LogSavePath           string
 	LogFileName           string
 	LogFileExt            string
+	ContextTimeout        time.Duration
 	UploadSavePath        string
 	UploadServerUrl       string
 	UploadImageMaxSize    int

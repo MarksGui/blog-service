@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/go-programming-tour-book/blog-service/pkg/tracer"
 
 	"github.com/go-programming-tour-book/blog-service/pkg/logger"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -32,6 +35,11 @@ func init() {
 	if err != nil {
 		log.Fatalf("init.setupLogger err: %v", err)
 	}
+
+	err = setupTracer()
+	if err != nil {
+		log.Fatalf("init.setupTracer err: %v", err)
+	}
 }
 
 func setupDBEngine() error {
@@ -57,7 +65,7 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	global.Logger.InfoF("%s: go-programming-tour-book/%s", "eddycjy", "blog-service")
+	global.Logger.Infof(context.Background(), "%s: go-programming-tour-book/%s", "eddycjy", "blog-service")
 	s.ListenAndServe()
 }
 
@@ -82,10 +90,15 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("Email", &global.EmailSetting)
+	if err != nil {
+		return err
+	}
 
 	global.ServerSetting.ReadTimeout *= time.Second
 	global.ServerSetting.WriteTimeout *= time.Second
 	global.JWTSetting.Expire *= time.Second
+	global.AppSetting.ContextTimeout *= time.Second
 
 	return nil
 }
@@ -98,5 +111,14 @@ func setupLogger() error {
 		MaxAge:    10,
 		LocalTime: true,
 	}, "", log.LstdFlags).WithCaller(2)
+	return nil
+}
+
+func setupTracer() error {
+	jaegerTracer, _, err := tracer.NewJaegerTracer("blog-service", "127.0.0.1:6831")
+	if err != nil {
+		return err
+	}
+	global.Tracer = jaegerTracer
 	return nil
 }
